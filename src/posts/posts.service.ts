@@ -57,6 +57,11 @@ export class PostsService {
       ...post,
       updatedAt: new Date(),
     };
+    console.log(
+      '🚀 ~ PostsService ~ update ~ updatedPost.this.posts[index]:',
+      this.posts[index],
+    );
+    console.log('🚀 ~ PostsService ~ update ~ updatedPost:', updatedPost);
     this.posts[index] = updatedPost;
     return updatedPost;
   }

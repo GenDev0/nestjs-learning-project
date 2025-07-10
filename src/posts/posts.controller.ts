@@ -1,3 +1,4 @@
+import { RemoveUndefinedPipe } from './../common/pipes/remove-undefined.pipe';
 import {
   Body,
   Controller,
@@ -13,6 +14,9 @@ import {
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { PostFilters, Post as PostProps } from './interfaces/post.interface';
+import { CreatePostDto } from './dto/crate-post.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
+import { PostExistPipe } from './pipes/post-exist.pipe';
 
 @Controller('posts')
 export class PostsController {
@@ -25,8 +29,8 @@ export class PostsController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() post: Omit<PostProps, 'id' | 'createdAt'>): PostProps {
-    return this.postsService.create(post);
+  create(@Body() createPostDto: CreatePostDto) {
+    return this.postsService.create(createPostDto);
   }
 
   @Get(':id')
@@ -35,8 +39,11 @@ export class PostsController {
   }
 
   @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() post: PostProps) {
-    return this.postsService.update(id, post);
+  update(
+    @Param('id', ParseIntPipe, PostExistPipe) id: number,
+    @Body(RemoveUndefinedPipe) createPostDto: UpdatePostDto,
+  ) {
+    return this.postsService.update(id, createPostDto);
   }
 
   @Delete(':id')
