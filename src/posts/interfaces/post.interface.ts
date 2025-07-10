@@ -1,8 +1,9 @@
-export interface Post {
+export interface PostInterface {
   id: number;
   title: string;
   content: string;
   authorName: string;
+  tags?: string[];
   createdAt: Date;
   updatedAt?: Date;
 }

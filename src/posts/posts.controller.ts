@@ -13,7 +13,10 @@ import {
   Query,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import { PostFilters, Post as PostProps } from './interfaces/post.interface';
+import {
+  PostFilters,
+  PostInterface as PostProps,
+} from './interfaces/post.interface';
 import { CreatePostDto } from './dto/crate-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostExistPipe } from './pipes/post-exist.pipe';

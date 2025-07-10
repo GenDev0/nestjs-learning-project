@@ -1,9 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Post, PostFilters } from './interfaces/post.interface';
+import { PostInterface, PostFilters } from './interfaces/post.interface';
+import { UpdatePostDto } from './dto/update-post.dto';
+import { CreatePostDto } from './dto/crate-post.dto';
 
 @Injectable()
 export class PostsService {
-  private posts: Post[] = [
+  private posts: PostInterface[] = [
     {
       id: 1,
       title: 'First Post',
@@ -27,10 +29,10 @@ export class PostsService {
     },
   ];
 
-  findAll(): Post[] {
+  findAll(): PostInterface[] {
     return this.posts || [];
   }
-  findById(id: number): Post {
+  findById(id: number): PostInterface {
     const post = this.posts.find((post) => post.id === id);
     if (!post) {
       throw new NotFoundException(`Post with id ${id} not found`);
@@ -38,7 +40,7 @@ export class PostsService {
     // Return a shallow copy to avoid mutation
     return post;
   }
-  create(post: Omit<Post, 'id' | 'createdAt'>): Post {
+  create(post: CreatePostDto): PostInterface {
     const newPost = {
       ...post,
       id: this.getNextId(),
@@ -47,7 +49,7 @@ export class PostsService {
     this.posts.push(newPost);
     return newPost;
   }
-  update(id: number, post: Partial<Omit<Post, 'id' | 'createdAt'>>): Post {
+  update(id: number, post: UpdatePostDto): PostInterface {
     const index = this.posts.findIndex((p) => p.id === id);
     if (index === -1) {
       throw new NotFoundException(`Post with id ${id} not found`);

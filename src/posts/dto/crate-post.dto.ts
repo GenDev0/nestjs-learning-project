@@ -1,4 +1,11 @@
-import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class CreatePostDto {
   @IsNotEmpty({ message: 'Title is required' })
@@ -18,4 +25,17 @@ export class CreatePostDto {
   @MinLength(2, { message: 'Author must be at least 3 characters long' })
   @MaxLength(50, { message: 'Author must not exceed 50 characters' })
   authorName: string;
+
+  @IsOptional()
+  @IsArray({ message: 'Tags must be an array of strings' })
+  @IsString({ each: true, message: 'Each tag must be a string' })
+  @MinLength(3, {
+    each: true,
+    message: 'Each tag must be at least 3 character long',
+  })
+  @MaxLength(10, {
+    each: true,
+    message: 'Each tag must not exceed 10 characters',
+  })
+  tags: string[];
 }
