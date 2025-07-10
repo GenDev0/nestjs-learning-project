@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PostsController } from './posts.controller';
+import { PostsService } from './posts.service';
 
 describe('PostsController', () => {
   let controller: PostsController;
@@ -9,8 +10,15 @@ describe('PostsController', () => {
       controllers: [PostsController],
       providers: [
         {
-          provide: 'Object', // Replace 'Object' with the actual token or class if known
-          useValue: {}, // Provide a mock implementation if needed
+          provide: PostsService,
+          useValue: {
+            // mock methods as needed, e.g.:
+            findAll: jest.fn(),
+            findOne: jest.fn(),
+            create: jest.fn(),
+            update: jest.fn(),
+            remove: jest.fn(),
+          },
         },
       ],
     }).compile();

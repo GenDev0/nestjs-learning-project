@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   ParseIntPipe,
   Patch,
@@ -17,12 +19,13 @@ export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Get()
-  findAll(@Query() filters: PostFilters) {
+  findAll(@Query() filters: PostFilters): PostProps[] {
     return this.postsService.findWithFilters(filters);
   }
 
   @Post()
-  create(@Body() post: PostProps) {
+  @HttpCode(HttpStatus.CREATED)
+  create(@Body() post: Omit<PostProps, 'id' | 'createdAt'>): PostProps {
     return this.postsService.create(post);
   }
 
@@ -37,6 +40,7 @@ export class PostsController {
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   delete(@Param('id', ParseIntPipe) id: number) {
     return this.postsService.delete(id);
   }

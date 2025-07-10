@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Post, PostFilters } from './interfaces/post.interface';
 
 @Injectable()
@@ -30,22 +30,27 @@ export class PostsService {
   findAll(): Post[] {
     return this.posts || [];
   }
-  findById(id: number): Post | null {
-    return this.posts.find((post) => post.id === id) ?? null;
+  findById(id: number): Post {
+    const post = this.posts.find((post) => post.id === id);
+    if (!post) {
+      throw new NotFoundException(`Post with id ${id} not found`);
+    }
+    // Return a shallow copy to avoid mutation
+    return post;
   }
-  create(post: Post): Post {
+  create(post: Omit<Post, 'id' | 'createdAt'>): Post {
     const newPost = {
       ...post,
-      id: this.posts.length + 1,
+      id: this.getNextId(),
       createdAt: new Date(),
     };
     this.posts.push(newPost);
     return newPost;
   }
-  update(id: number, post: Post): Post | null {
+  update(id: number, post: Partial<Omit<Post, 'id' | 'createdAt'>>): Post {
     const index = this.posts.findIndex((p) => p.id === id);
     if (index === -1) {
-      return null;
+      throw new NotFoundException(`Post with id ${id} not found`);
     }
     const updatedPost = {
       ...this.posts[index],
@@ -55,24 +60,19 @@ export class PostsService {
     this.posts[index] = updatedPost;
     return updatedPost;
   }
-  delete(id: number): boolean {
+  delete(id: number): { message: string } {
     const index = this.posts.findIndex((post) => post.id === id);
     if (index === -1) {
-      return false;
+      throw new NotFoundException(`Post with id ${id} not found`);
     }
     this.posts.splice(index, 1);
-    return true;
+    return { message: `Post with id ${id} deleted successfully` };
   }
 
   findWithFilters(filters: PostFilters) {
-    console.log('🚀 ~ PostsService ~ findWithFilters ~ filters:', filters);
     let result = this.posts; // Or use a query builder if using TypeORM, Prisma, etc.
 
     if (filters?.author) {
-      console.log(
-        '🚀 ~ PostsService ~ findWithFilters ~ filters?.author:',
-        filters?.author,
-      );
       result = result.filter((post) =>
         post.authorName.toLowerCase().includes(filters.author!.toLowerCase()),
       );
@@ -103,5 +103,11 @@ export class PostsService {
     }
 
     return result;
+  }
+
+  private getNextId(): number {
+    return this.posts.length > 0
+      ? Math.max(...this.posts.map((post) => post.id)) + 1
+      : 1;
   }
 }
