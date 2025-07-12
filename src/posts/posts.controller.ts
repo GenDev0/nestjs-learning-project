@@ -13,20 +13,18 @@ import {
   Query,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import {
-  PostFilters,
-  PostInterface as PostProps,
-} from './interfaces/post.interface';
+import { PostFilters } from './interfaces/post.interface';
 import { CreatePostDto } from './dto/crate-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostExistPipe } from './pipes/post-exist.pipe';
+import { Post as PostEntity } from './entities/post.entity';
 
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Get()
-  findAll(@Query() filters: PostFilters): PostProps[] {
+  findAll(@Query() filters: PostFilters): Promise<PostEntity[]> {
     return this.postsService.findWithFilters(filters);
   }
 
