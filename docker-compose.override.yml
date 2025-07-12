@@ -1,0 +1,8 @@
+services:
+  postgres:
+    ports:
+      - '${DB_PORT:-5435}:5432'
+
+  adminer:
+    ports:
+      - '${ADMINER_PORT:-8087}:8080'
