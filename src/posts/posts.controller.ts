@@ -41,10 +41,10 @@ export class PostsController {
 
   @Patch(':id')
   update(
-    @Param('id', ParseIntPipe, PostExistPipe) id: number,
+    @Param('id', ParseIntPipe, PostExistPipe) existingPost: PostEntity,
     @Body(RemoveUndefinedPipe) createPostDto: UpdatePostDto,
   ) {
-    return this.postsService.update(id, createPostDto);
+    return this.postsService.update(existingPost, createPostDto);
   }
 
   @Delete(':id')

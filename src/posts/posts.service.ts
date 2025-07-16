@@ -30,11 +30,7 @@ export class PostsService {
     });
     return this.postsRepository.save(newPost);
   }
-  async update(id: number, post: UpdatePostDto): Promise<Post> {
-    const existingPost = await this.postsRepository.findOneBy({ id });
-    if (!existingPost) {
-      throw new NotFoundException(`Post with id ${id} not found`);
-    }
+  async update(existingPost: Post, post: UpdatePostDto): Promise<Post> {
     const updatedPost = this.postsRepository.merge(existingPost, post);
     return this.postsRepository.save(updatedPost);
   }
