@@ -7,7 +7,9 @@ export class RemoveUndefinedPipe implements PipeTransform {
       return value.filter((item) => item !== undefined);
     } else if (typeof value === 'object' && value !== null) {
       return Object.fromEntries(
-        Object.entries(value).filter((entry) => entry[1] !== undefined),
+        Object.entries(value as Record<string, unknown>).filter(
+          (entry) => entry[1] !== undefined,
+        ),
       );
     }
     return value;

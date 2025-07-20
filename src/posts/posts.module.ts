@@ -3,6 +3,7 @@ import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Post } from './entities/post.entity';
+import { PostExistPipe } from './pipes/post-exist.pipe';
 
 @Module({
   imports: [
@@ -13,6 +14,6 @@ import { Post } from './entities/post.entity';
     TypeOrmModule.forFeature([Post]),
   ],
   controllers: [PostsController],
-  providers: [PostsService],
+  providers: [PostsService, PostExistPipe],
 })
 export class PostsModule {}
