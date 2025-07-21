@@ -6,7 +6,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class CreateUserDto {
+export class RegisterDto {
   @IsNotEmpty({ message: 'username is required' })
   @IsString({ message: 'username must be a string' })
   @MinLength(3, { message: 'username must be at least 3 characters long' })
