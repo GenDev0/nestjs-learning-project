@@ -56,15 +56,11 @@ export class HashingService {
 
     const accessToken = this.jwtService.sign(payload, {
       expiresIn: jwtConfig?.accessTokenExpiration || '15m',
-      secret:
-        this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET') ||
-        'defaultAccessSecret',
+      secret: jwtConfig?.accessTokenSecret || 'defaultAccessSecret',
     });
     const refreshToken = this.jwtService.sign(payload, {
       expiresIn: jwtConfig?.refreshTokenExpiration || '7d',
-      secret:
-        this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET') ||
-        'defaultRefreshSecret',
+      secret: jwtConfig?.refreshTokenSecret || 'defaultRefreshSecret',
     });
     return { accessToken, refreshToken };
   }
