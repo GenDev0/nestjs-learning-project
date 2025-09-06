@@ -1,8 +1,14 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { HashingService } from 'src/common/hashing/hasing.service';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { HashingService } from 'src/common/hashing/hashing.service';
 import { CreateUserResult, UsersService } from 'src/users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { UserRole } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -11,40 +17,69 @@ export class AuthService {
     private readonly hashingService: HashingService,
   ) {}
 
-  async login({ email, password: userPassword }: LoginDto): Promise<any> {
+  async login({ email, password: enteredPassword }: LoginDto): Promise<any> {
     const user = await this.usersService.findByEmail(email);
-
-    if (user) {
-      const isPasswordValid = await this.hashingService.compareValue(
-        userPassword,
-        user.password,
-      );
-
-      if (!isPasswordValid) {
-        throw new UnauthorizedException('Invalid credentials');
-      }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password, ...userWithoutPassword } = user;
-      const tokens = this.hashingService.generateTokens(userWithoutPassword);
-      return {
-        ...tokens,
-        user: userWithoutPassword,
-      };
+    if (
+      !user ||
+      !(await this.hashingService.compareValue(enteredPassword, user.password))
+    ) {
+      throw new UnauthorizedException('Invalid credentials');
     }
-    throw new UnauthorizedException('Invalid credentials');
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...userWithoutPassword } = user;
+    const tokens = this.hashingService.generateTokens(userWithoutPassword);
+    return {
+      ...tokens,
+      user: userWithoutPassword,
+    };
   }
 
   async register(
     registerDto: RegisterDto,
-  ): Promise<{ message: string; user: CreateUserResult }> {
-    const newUser = await this.usersService.create(registerDto);
-    return { message: 'Registration successful', user: newUser };
+  ): Promise<{ message: string; data: CreateUserResult }> {
+    return this.handleUserCreation(registerDto, UserRole.USER);
   }
 
   async createAdmin(
     registerDto: RegisterDto,
-  ): Promise<{ message: string; user: CreateUserResult }> {
-    const newUser = await this.usersService.createAdmin(registerDto);
-    return { message: 'Registration successful', user: newUser };
+  ): Promise<{ message: string; data: CreateUserResult }> {
+    return this.handleUserCreation(registerDto, UserRole.ADMIN);
+  }
+
+  private async handleUserCreation(
+    registerDto: RegisterDto,
+    role: UserRole,
+  ): Promise<{ message: string; data: CreateUserResult }> {
+    const { username, email, password } = registerDto;
+
+    if (!username || !email || !password) {
+      throw new BadRequestException('Missing required fields.');
+    }
+
+    const existingUser = await this.usersService.findByEmail(email);
+    if (existingUser) {
+      throw new ConflictException('Email already exists.');
+    }
+
+    const hashedPassword = await this.hashingService.hashValue(password);
+
+    const savedUser = await this.usersService.createUserEntity({
+      ...registerDto,
+      password: hashedPassword,
+      role,
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _, ...userWithoutPassword } = savedUser;
+    const tokens = this.hashingService.generateTokens(userWithoutPassword);
+
+    return {
+      message: 'Registration successful',
+      data: {
+        user: userWithoutPassword,
+        ...tokens,
+      },
+    };
   }
 }

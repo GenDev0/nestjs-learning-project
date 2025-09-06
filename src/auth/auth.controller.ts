@@ -21,7 +21,7 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   async register(
     @Body() registerDto: RegisterDto,
-  ): Promise<{ message: string; user: CreateUserResult }> {
+  ): Promise<{ message: string; data: CreateUserResult }> {
     return this.authService.register(registerDto);
   }
 
@@ -29,7 +29,7 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   async createAdmin(
     @Body() registerDto: RegisterDto,
-  ): Promise<{ message: string; user: CreateUserResult }> {
+  ): Promise<{ message: string; data: CreateUserResult }> {
     return this.authService.createAdmin(registerDto);
   }
 }

@@ -1,14 +1,8 @@
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-} from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Repository } from 'typeorm';
-import { User, UserRole } from './entities/user.entity';
+import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { HashingService } from 'src/common/hashing/hasing.service';
 
 export interface CreateUserResult {
   accessToken: string;
@@ -20,68 +14,11 @@ export interface CreateUserResult {
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
-    private readonly hashingService: HashingService,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<CreateUserResult> {
-    const { username, email, password: userPassword } = createUserDto;
-
-    if (!username || !email || !userPassword) {
-      throw new BadRequestException('Missing required fields.');
-    }
-
-    const existingUser = await this.userRepository.findOne({
-      where: { email },
-    });
-    if (existingUser) {
-      throw new ConflictException('Email already exists.');
-    }
-
-    const hashedPassword = await this.hashingService.hashValue(userPassword);
-
-    const newUser = this.userRepository.create({
-      ...createUserDto,
-      password: hashedPassword,
-      role: UserRole.USER,
-    });
-    const savedUser = await this.userRepository.save(newUser);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...userWithoutPassword } = savedUser;
-    const tokens = this.hashingService.generateTokens(userWithoutPassword);
-    return {
-      ...tokens,
-      user: userWithoutPassword,
-    };
-  }
-  async createAdmin(createUserDto: CreateUserDto): Promise<CreateUserResult> {
-    const { username, email, password: userPassword } = createUserDto;
-
-    if (!username || !email || !userPassword) {
-      throw new BadRequestException('Missing required fields.');
-    }
-
-    const existingUser = await this.userRepository.findOne({
-      where: { email },
-    });
-    if (existingUser) {
-      throw new ConflictException('Email already exists.');
-    }
-
-    const hashedPassword = await this.hashingService.hashValue(userPassword);
-
-    const newUser = this.userRepository.create({
-      ...createUserDto,
-      password: hashedPassword,
-      role: UserRole.ADMIN,
-    });
-    const savedUser = await this.userRepository.save(newUser);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...userWithoutPassword } = savedUser; // Exclude password from the response
-    const tokens = this.hashingService.generateTokens(userWithoutPassword);
-    return {
-      ...tokens,
-      user: userWithoutPassword,
-    };
+  async createUserEntity(data: Partial<User>): Promise<User> {
+    const user = this.userRepository.create(data);
+    return this.userRepository.save(user);
   }
 
   async findAll(): Promise<Omit<User, 'password'>[]> {
