@@ -82,4 +82,11 @@ export class AuthService {
       },
     };
   }
+
+  async refreshToken(refreshToken: string): Promise<{
+    accessToken: string;
+    refreshToken: string;
+  }> {
+    return this.hashingService.refreshAccessToken(refreshToken);
+  }
 }

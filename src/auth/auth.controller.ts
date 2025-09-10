@@ -32,4 +32,13 @@ export class AuthController {
   ): Promise<{ message: string; data: CreateUserResult }> {
     return this.authService.createAdmin(registerDto);
   }
+
+  @Post('refresh-token')
+  @HttpCode(HttpStatus.OK)
+  async refreshToken(@Body('refreshToken') refreshToken: string): Promise<{
+    accessToken: string;
+    refreshToken: string;
+  }> {
+    return this.authService.refreshToken(refreshToken);
+  }
 }
