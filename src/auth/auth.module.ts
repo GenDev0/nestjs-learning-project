@@ -16,6 +16,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
+        global: true,
         secret:
           config.get<string>('JWT_ACCESS_TOKEN_SECRET') ||
           'defaultAccessSecret',
