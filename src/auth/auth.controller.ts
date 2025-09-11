@@ -13,11 +13,13 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { CreateUserResult } from 'src/users/users.service';
 import { AuthGuard } from './guards/auth.guard';
+import { Public } from './decorators/public.decorator';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(
@@ -27,6 +29,7 @@ export class AuthController {
     return this.authService.login(loginDto);
   }
 
+  @Public()
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   async register(
@@ -43,6 +46,7 @@ export class AuthController {
     return this.authService.createAdmin(registerDto);
   }
 
+  @Public()
   @Post('refresh-token')
   @HttpCode(HttpStatus.OK)
   async refreshToken(@Body('refreshToken') refreshToken: string): Promise<{
