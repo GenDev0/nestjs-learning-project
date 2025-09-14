@@ -5,23 +5,27 @@ import {
   HttpCode,
   HttpStatus,
   Post,
-  Request,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { CreateUserResult } from 'src/users/users.service';
-import { AuthGuard } from './guards/auth.guard';
+// import { AuthGuard } from './guards/auth.guard';
 import { Public } from './decorators/public.decorator';
+import { CurrentUser } from './decorators/current-user.decorator';
+import { Roles } from './decorators/roles.decorator';
+import { UserRole } from 'src/users/entities/user.entity';
+import { RolesGuard } from './guards/roles.guard';
+// import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
+  @Public()
   async login(
     @Body()
     loginDto: LoginDto,
@@ -29,9 +33,9 @@ export class AuthController {
     return this.authService.login(loginDto);
   }
 
-  @Public()
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
+  @Public()
   async register(
     @Body() registerDto: RegisterDto,
   ): Promise<{ message: string; data: CreateUserResult }> {
@@ -40,15 +44,17 @@ export class AuthController {
 
   @Post('create-admin')
   @HttpCode(HttpStatus.CREATED)
+  @Roles(UserRole.ADMIN)
+  @UseGuards(RolesGuard)
   async createAdmin(
     @Body() registerDto: RegisterDto,
   ): Promise<{ message: string; data: CreateUserResult }> {
     return this.authService.createAdmin(registerDto);
   }
 
-  @Public()
   @Post('refresh-token')
   @HttpCode(HttpStatus.OK)
+  @Public()
   async refreshToken(@Body('refreshToken') refreshToken: string): Promise<{
     accessToken: string;
     refreshToken: string;
@@ -56,9 +62,10 @@ export class AuthController {
     return this.authService.refreshToken(refreshToken);
   }
 
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Get('profile')
-  getProfile(@Request() req: { user: any }): any {
-    return req.user;
+  getProfile(@CurrentUser() user: any): any {
+    return user;
   }
 }

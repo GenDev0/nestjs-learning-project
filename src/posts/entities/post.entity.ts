@@ -1,7 +1,9 @@
+import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -28,4 +30,7 @@ export class Post {
 
   @Column('simple-array', { nullable: true })
   tags?: string[];
+
+  @ManyToOne(() => User, (user) => user.posts, { eager: true })
+  author: User;
 }
