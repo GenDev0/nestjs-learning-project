@@ -19,9 +19,6 @@ export class Post {
   @Column({ type: 'text' })
   content: string;
 
-  @Column({ length: 50 })
-  authorName: string;
-
   @CreateDateColumn()
   createdAt: Date;
 
@@ -31,6 +28,9 @@ export class Post {
   @Column('simple-array', { nullable: true })
   tags?: string[];
 
-  @ManyToOne(() => User, (user) => user.posts, { eager: true })
+  @ManyToOne(() => User, (user) => user.posts, {
+    eager: false,
+    onDelete: 'CASCADE',
+  })
   author: User;
 }

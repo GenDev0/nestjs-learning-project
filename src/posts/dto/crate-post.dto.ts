@@ -20,12 +20,6 @@ export class CreatePostDto {
   @MaxLength(500, { message: 'Content must not exceed 500 characters' })
   content: string;
 
-  @IsNotEmpty({ message: 'Author is required' })
-  @IsString({ message: 'Author must be a string' })
-  @MinLength(2, { message: 'Author must be at least 3 characters long' })
-  @MaxLength(50, { message: 'Author must not exceed 50 characters' })
-  authorName: string;
-
   @IsOptional()
   @IsArray({ message: 'Tags must be an array of strings' })
   @IsString({ each: true, message: 'Each tag must be a string' })
