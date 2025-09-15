@@ -11,7 +11,7 @@ export class LoginThrottleGuard extends ThrottlerGuard {
       typeof body?.email === 'string'
         ? body.email
         : 'anonymous';
-    return await Promise.resolve(`${req.ip}-${email}`);
+    return await Promise.resolve(`login-${email}`);
   }
   // set limits for 5 login attempts
   protected getRequestLimit(): Promise<number> {
