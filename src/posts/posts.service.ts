@@ -1,15 +1,11 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PostFilters } from './interfaces/post.interface';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { CreatePostDto } from './dto/crate-post.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Post } from './entities/post.entity';
 import { Repository } from 'typeorm';
-import { User, UserRole } from 'src/users/entities/user.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class PostsService {
@@ -45,21 +41,29 @@ export class PostsService {
   async update(
     existingPost: Post,
     updatePostDto: UpdatePostDto,
-    user: User,
+    // user: User,
   ): Promise<Post> {
-    if (existingPost.author.id !== user.id && user.role !== UserRole.ADMIN) {
-      throw new ForbiddenException('You can only edit your own posts');
-    }
+    // if (existingPost.author.id !== user.id && user.role !== UserRole.ADMIN) {
+    //   throw new ForbiddenException('You can only edit your own posts');
+    // }
     const updatedPost = this.postsRepository.merge(existingPost, updatePostDto);
     return this.postsRepository.save(updatedPost);
   }
-  async delete(id: number, user: User): Promise<{ message: string }> {
-    const post = await this.findById(id);
+  async delete(
+    id: number,
+    // user: User
+  ): Promise<{ message: string }> {
+    // const post = await this.findById(id);
 
-    if (post.author.id !== user.id && user.role !== UserRole.ADMIN) {
-      throw new ForbiddenException('You can only delete your own posts');
+    // if (post.author.id !== user.id && user.role !== UserRole.ADMIN) {
+    //   throw new ForbiddenException('You can only delete your own posts');
+    // }
+    // await this.postsRepository.remove(post);
+    // return { message: `Post with id ${id} deleted successfully` };
+    const result = await this.postsRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Post with id ${id} not found`);
     }
-    await this.postsRepository.remove(post);
     return { message: `Post with id ${id} deleted successfully` };
   }
 

@@ -23,6 +23,7 @@ import { User, UserRole } from 'src/users/entities/user.entity';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+import { PostOwnerGuard } from './guards/post-owner.guard';
 
 @Controller('posts')
 export class PostsController {
@@ -48,20 +49,23 @@ export class PostsController {
 
   @Patch(':id')
   @Roles(UserRole.ADMIN, UserRole.USER)
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, PostOwnerGuard)
   update(
     @Param('id', ParseIntPipe, PostExistPipe) existingPost: PostEntity,
     @Body(RemoveUndefinedPipe) createPostDto: UpdatePostDto,
-    @CurrentUser() user: User,
+    // @CurrentUser() user: User,
   ) {
-    return this.postsService.update(existingPost, createPostDto, user);
+    return this.postsService.update(existingPost, createPostDto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @Roles(UserRole.ADMIN, UserRole.USER)
-  @UseGuards(RolesGuard)
-  delete(@Param('id', ParseIntPipe) id: number, @CurrentUser() user: User) {
-    return this.postsService.delete(id, user);
+  @UseGuards(RolesGuard, PostOwnerGuard)
+  delete(
+    @Param('id', ParseIntPipe) id: number,
+    // @CurrentUser() user: User
+  ) {
+    return this.postsService.delete(id);
   }
 }
