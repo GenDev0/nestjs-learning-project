@@ -23,7 +23,9 @@ import { User, UserRole } from 'src/users/entities/user.entity';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
-import { PostOwnerGuard } from './guards/post-owner.guard';
+// import { PostOwnerGuard } from './guards/post-owner.guard';
+import { OwnershipGuard } from 'src/common/guards/ownership.guard';
+import { CheckOwnership } from 'src/common/decorators/check-ownership.decorator';
 
 @Controller('posts')
 export class PostsController {
@@ -49,7 +51,8 @@ export class PostsController {
 
   @Patch(':id')
   @Roles(UserRole.ADMIN, UserRole.USER)
-  @UseGuards(RolesGuard, PostOwnerGuard)
+  @UseGuards(RolesGuard, OwnershipGuard)
+  @CheckOwnership('post')
   update(
     @Param('id', ParseIntPipe, PostExistPipe) existingPost: PostEntity,
     @Body(RemoveUndefinedPipe) createPostDto: UpdatePostDto,
@@ -61,7 +64,8 @@ export class PostsController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @Roles(UserRole.ADMIN, UserRole.USER)
-  @UseGuards(RolesGuard, PostOwnerGuard)
+  @UseGuards(RolesGuard, OwnershipGuard)
+  @CheckOwnership('post')
   delete(
     @Param('id', ParseIntPipe) id: number,
     // @CurrentUser() user: User

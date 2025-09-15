@@ -4,6 +4,7 @@ import { PostsService } from './posts.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Post } from './entities/post.entity';
 import { PostExistPipe } from './pipes/post-exist.pipe';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { PostExistPipe } from './pipes/post-exist.pipe';
     // This will be available in the PostsService via dependency injection
     // This allows the PostsService to use the Post repository for database operations
     TypeOrmModule.forFeature([Post]),
+    UsersModule,
   ],
   controllers: [PostsController],
   providers: [PostsService, PostExistPipe],
