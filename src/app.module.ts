@@ -8,6 +8,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { CommonModule } from './common/common.module';
+import {
+  // ThrottlerGuard,
+  ThrottlerModule,
+} from '@nestjs/throttler';
+// import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -30,12 +35,30 @@ import { CommonModule } from './common/common.module';
       }),
       inject: [ConfigService],
     }),
+    ThrottlerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        throttlers: [
+          {
+            ttl: config.get<number>('THROTTLE_TTL') || 60000,
+            limit: config.get<number>('THROTTLE_LIMIT') || 5,
+          },
+        ],
+      }),
+    }),
     CommonModule,
     PostsModule,
     AuthModule,
     UsersModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: ThrottlerGuard,
+    // },
+  ],
 })
 export class AppModule {}

@@ -15,4 +15,10 @@ export default (): EnvConfig => ({
     accessTokenExpiration: process.env.JWT_ACCESS_TOKEN_EXPIRATION || '3s',
     refreshTokenExpiration: process.env.JWT_REFRESH_TOKEN_EXPIRATION || '7d',
   },
+  throttle: {
+    ttl: process.env.THROTTLE_TTL ? parseInt(process.env.THROTTLE_TTL, 10) : 60,
+    limit: process.env.THROTTLE_LIMIT
+      ? parseInt(process.env.THROTTLE_LIMIT, 10)
+      : 10,
+  },
 });

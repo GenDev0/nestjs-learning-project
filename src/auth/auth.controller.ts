@@ -17,6 +17,7 @@ import { CurrentUser } from './decorators/current-user.decorator';
 import { Roles } from './decorators/roles.decorator';
 import { UserRole } from 'src/users/entities/user.entity';
 import { RolesGuard } from './guards/roles.guard';
+import { ThrottlerGuard } from '@nestjs/throttler';
 // import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
@@ -25,6 +26,7 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
+  @UseGuards(ThrottlerGuard)
   @Public()
   async login(
     @Body()

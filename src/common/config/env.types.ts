@@ -14,4 +14,8 @@ export interface EnvConfig {
     accessTokenExpiration: string;
     refreshTokenExpiration: string;
   };
+  throttle: {
+    ttl: number;
+    limit: number;
+  };
 }
