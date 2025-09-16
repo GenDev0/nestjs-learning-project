@@ -12,6 +12,7 @@ import {
   // ThrottlerGuard,
   ThrottlerModule,
 } from '@nestjs/throttler';
+import { CacheModule } from '@nestjs/cache-manager';
 // import { APP_GUARD } from '@nestjs/core';
 
 @Module({
@@ -20,6 +21,11 @@ import {
       isGlobal: true,
       envFilePath: '.env.local',
       load: [envConfiguration],
+    }),
+    CacheModule.register({
+      isGlobal: true,
+      ttl: 30000, // milliseconds
+      max: 100, // maximum number of items in cache
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],

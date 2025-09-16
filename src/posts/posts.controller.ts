@@ -14,7 +14,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import { PostFilters } from './interfaces/post.interface';
 import { CreatePostDto } from './dto/crate-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostExistPipe } from './pipes/post-exist.pipe';
@@ -26,14 +25,21 @@ import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 // import { PostOwnerGuard } from './guards/post-owner.guard';
 import { OwnershipGuard } from 'src/common/guards/ownership.guard';
 import { CheckOwnership } from 'src/common/decorators/check-ownership.decorator';
+import { PostsQueryDto } from './dto/posts-query.dto';
+import { PaginatedResponse } from 'src/common/interfaces/pagination-response.interface';
 
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Get()
-  findAll(@Query() filters: PostFilters): Promise<PostEntity[]> {
-    return this.postsService.findWithFilters(filters);
+  @HttpCode(HttpStatus.OK)
+  findAll(
+    @Query() query: PostsQueryDto,
+  ): Promise<PaginatedResponse<PostEntity>> {
+    console.log('🚀 ~ PostsController ~ findAll ~ query:', query);
+
+    return this.postsService.findAll(query);
   }
 
   @Post()
