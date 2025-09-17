@@ -21,4 +21,10 @@ export default (): EnvConfig => ({
       ? parseInt(process.env.THROTTLE_LIMIT, 10)
       : 10,
   },
+  cloudinary: {
+    cloudinaryUrl: process.env.CLOUDINARY_URL ?? '',
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME ?? '',
+    apiKey: process.env.CLOUDINARY_API_KEY ?? '',
+    apiSecret: process.env.CLOUDINARY_API_SECRET ?? '',
+  },
 });

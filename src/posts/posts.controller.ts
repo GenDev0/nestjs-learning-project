@@ -23,7 +23,7 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 // import { PostOwnerGuard } from './guards/post-owner.guard';
-import { OwnershipGuard } from 'src/common/guards/ownership.guard';
+// import { OwnershipGuard } from 'src/common/guards/ownership.guard';
 import { CheckOwnership } from 'src/common/decorators/check-ownership.decorator';
 import { PostsQueryDto } from './dto/posts-query.dto';
 import { PaginatedResponse } from 'src/common/interfaces/pagination-response.interface';
@@ -57,7 +57,7 @@ export class PostsController {
 
   @Patch(':id')
   @Roles(UserRole.ADMIN, UserRole.USER)
-  @UseGuards(RolesGuard, OwnershipGuard)
+  @UseGuards(RolesGuard)
   @CheckOwnership('post')
   update(
     @Param('id', ParseIntPipe, PostExistPipe) existingPost: PostEntity,
@@ -70,7 +70,7 @@ export class PostsController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @Roles(UserRole.ADMIN, UserRole.USER)
-  @UseGuards(RolesGuard, OwnershipGuard)
+  @UseGuards(RolesGuard)
   @CheckOwnership('post')
   delete(
     @Param('id', ParseIntPipe) id: number,

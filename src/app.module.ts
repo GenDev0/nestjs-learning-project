@@ -14,6 +14,11 @@ import {
 } from '@nestjs/throttler';
 import { CacheModule } from '@nestjs/cache-manager';
 // import { APP_GUARD } from '@nestjs/core';
+import { FileUploadModule } from './file-upload/file-upload.module';
+import { APP_GUARD } from '@nestjs/core';
+import { OwnershipGuard } from './common/guards/ownership.guard';
+import { GuardsModule } from './common/guards/guards.module';
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -53,10 +58,12 @@ import { CacheModule } from '@nestjs/cache-manager';
         ],
       }),
     }),
-    CommonModule,
     PostsModule,
     AuthModule,
     UsersModule,
+    FileUploadModule,
+    CommonModule,
+    GuardsModule,
   ],
   controllers: [AppController],
   providers: [
@@ -65,6 +72,14 @@ import { CacheModule } from '@nestjs/cache-manager';
     //   provide: APP_GUARD,
     //   useClass: ThrottlerGuard,
     // },
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: OwnershipGuard, // global guard
+    },
   ],
 })
 export class AppModule {}

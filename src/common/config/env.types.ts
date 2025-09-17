@@ -1,4 +1,3 @@
-// src/common/config/env.types.ts
 export interface EnvConfig {
   database: {
     type: 'postgres';
@@ -17,5 +16,11 @@ export interface EnvConfig {
   throttle: {
     ttl: number;
     limit: number;
+  };
+  cloudinary: {
+    cloudinaryUrl: string;
+    cloudName: string;
+    apiKey: string;
+    apiSecret: string;
   };
 }
