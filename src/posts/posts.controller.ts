@@ -12,6 +12,7 @@ import {
   Post,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/crate-post.dto';
@@ -27,7 +28,9 @@ import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { CheckOwnership } from 'src/common/decorators/check-ownership.decorator';
 import { PostsQueryDto } from './dto/posts-query.dto';
 import { PaginatedResponse } from 'src/common/interfaces/pagination-response.interface';
+import { Logginginterceptor } from 'src/common/interceptors/logging.interceptor';
 
+@UseInterceptors(Logginginterceptor)
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
