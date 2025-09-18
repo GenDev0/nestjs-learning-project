@@ -8,6 +8,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { UsersModule } from 'src/users/users.module';
 import { RolesGuard } from './guards/roles.guard';
+import { EventsModule } from 'src/events/events.module';
 
 @Module({
   controllers: [AuthController],
@@ -28,6 +29,7 @@ import { RolesGuard } from './guards/roles.guard';
         },
       }),
     }),
+    EventsModule,
   ],
   exports: [AuthService, RolesGuard],
 })

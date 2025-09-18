@@ -9,12 +9,14 @@ import { CreateUserResult, UsersService } from 'src/users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { UserRole } from 'src/users/entities/user.entity';
+import { UserEventsService } from 'src/events/listeners/user-events.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly hashingService: HashingService,
+    private readonly userEventsService: UserEventsService,
   ) {}
 
   async login({ email, password: enteredPassword }: LoginDto): Promise<any> {
@@ -29,6 +31,7 @@ export class AuthService {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...userWithoutPassword } = user;
     const tokens = this.hashingService.generateTokens(userWithoutPassword);
+    this.userEventsService.emitUserLoggedInEvent(user);
     return {
       ...tokens,
       user: userWithoutPassword,

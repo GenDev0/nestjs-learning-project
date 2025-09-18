@@ -19,6 +19,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { OwnershipGuard } from './common/guards/ownership.guard';
 import { GuardsModule } from './common/guards/guards.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
     FileUploadModule,
     CommonModule,
     GuardsModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [

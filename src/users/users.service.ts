@@ -3,6 +3,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UserEventsService } from 'src/events/listeners/user-events.service';
 
 export interface CreateUserResult {
   accessToken: string;
@@ -14,11 +15,16 @@ export interface CreateUserResult {
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
+    private readonly userEventsService: UserEventsService,
   ) {}
 
   async createUserEntity(data: Partial<User>): Promise<User> {
     const user = this.userRepository.create(data);
-    return this.userRepository.save(user);
+    const createdUser = await this.userRepository.save(user);
+    // Emit user registered event
+    this.userEventsService.emitUserRegisteredEvent(createdUser);
+
+    return createdUser;
   }
 
   async findAll(): Promise<Omit<User, 'password'>[]> {
@@ -51,6 +57,7 @@ export class UsersService {
   ): Promise<User> {
     const updatedUser = this.userRepository.merge(existingUser, updateUserDto);
     await this.userRepository.save(updatedUser);
+    this.userEventsService.emitUserUpdatedEvent(updatedUser);
     return updatedUser;
   }
 
@@ -60,6 +67,7 @@ export class UsersService {
       throw new BadRequestException('User not found.');
     }
     await this.userRepository.remove(user);
+    this.userEventsService.emitUserDeletedEvent(user);
     return { message: 'User deleted successfully.' };
   }
 }

@@ -4,10 +4,12 @@ import { UsersController } from './users.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { UserExistsPipe } from './pipes/user-exists.pipe';
+import { EventsModule } from 'src/events/events.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]), // Assuming User is an entity imported from entities/user.entity.ts
+    EventsModule,
   ],
   controllers: [UsersController],
   providers: [UsersService, UserExistsPipe],
